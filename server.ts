@@ -1,13 +1,21 @@
 import express from "express";
 import { apiRouter } from "./routes/api";
+import { csrfRouter } from "./routes/csrf";
 import crypto from "crypto";
 
 const app = express();
 const PORT = 3000;
 
 app.set("view engine", "ejs");
-app.use(express.static("public"));
+app.use(
+  express.static("public", {
+    setHeaders(res, path, stat) {
+      res.header("X-Frame-Options", "SAMEORIGIN");
+    },
+  })
+);
 app.use("/api", apiRouter);
+app.use("/csrf", csrfRouter);
 
 app.get("/", (req, res, next) => {
   res.send("Top page");
